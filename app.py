@@ -2,9 +2,9 @@
 # 1. Crear modelos
 # 2. importamos las librerias de flask
 from crypt import methods
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session
 from flask_migrate import Migrate
-from models import db, Usuario
+from models import db, Usuario, Regiones, Provincias, Comunas, Clientes
 from flask_cors import CORS, cross_origin
 
 # 16. jwt seguridad
@@ -53,9 +53,11 @@ def create_token():
 # 5. Creamos la ruta por defecto para saber si mi app esta funcionado
 # 6. ejecutamos el comando en la consola: python app.py o python3 app.py y revisamos nuestro navegador
 @app.route('/')
-@jwt_required()
+# @jwt_required()
 def index():
     return 'Hola desde gitpod'
+
+######## Usuarios #########
 
 # 7. Ruta para consultar todos los Usuarios
 @app.route('/usuarios', methods=['GET'])
@@ -109,12 +111,102 @@ def updateUsuario(id):
 
     return jsonify(user.serialize()),200
 
+######## Regiones #########
+@app.route('/regiones', methods=['GET'])
+def getRegiones():
+    regiones = Regiones.query.all()
+    regiones = list(map(lambda x: x.serialize(), regiones))
+    return jsonify(regiones),200
+
+# obtener listado de todas las comunas de la región solicitada
+@app.route('/regiones/<id>/comunas', methods=['GET'])
+def getComunasByRegion(id):
+    comunas = db.session.query(Comunas).filter(Regiones.id == id).filter(Provincias.region_id == id).filter(Comunas.provincia_id == Provincias.id)
+    comunas = list(map(lambda x: x.serialize(), comunas))
+    # print(comunas)
+    return jsonify(comunas),200
+
+######## Provincia #########
+@app.route('/provincias', methods=['GET'])
+def getProvincias():
+    provincias = Provincias.query.all()
+    provincias = list(map(lambda x: x.serialize(), provincias))
+    return jsonify(provincias),200
+
+######## Comunas #########
+@app.route('/comunas', methods=['GET'])
+def getComunas():
+    comunas = Comunas.query.all()
+    comunas = list(map(lambda x: x.serialize(), comunas))
+    return jsonify(comunas),200
+
+@app.route('/comunas/<id>', methods=['GET'])
+def getComuna(id):
+    comuna = Comunas.query.get(id)
+    return jsonify(comuna.serialize()),200
+
+
+
+######### Clientes #########
+@app.route('/clientes', methods=['GET'])
+def getClientes():
+    clientes = Clientes.query.all()
+    clientes = list(map(lambda x: x.serialize(), clientes))
+    return jsonify(clientes),200
+
+@app.route('/clientes', methods=['POST'])
+def addCliente():
+    cliente = Clientes()
+    # asignar a variables lo que recibo mediante post
+    cliente.nombre = request.json.get('nombre')
+    cliente.apellido_paterno = request.json.get('apellido_paterno')
+    cliente.apellido_materno = request.json.get('apellido_materno')
+    cliente.direccion = request.json.get('direccion')
+    cliente.telefono = request.json.get('telefono')
+    cliente.email = request.json.get('email')
+    cliente.password = request.json.get('password')
+
+    Clientes.save(cliente)
+
+    return jsonify(cliente.serialize()),200
+
+@app.route('/clientes/<id>', methods=['GET'])
+def getCliente(id):
+    cliente = Clientes.query.get(id)
+    return jsonify(cliente.serialize()),200
+
+@app.route('/clientes/<id>', methods=['DELETE'])
+def deleteCliente(id):
+    cliente = Clientes.query.get(id)
+    Clientes.delete(cliente)
+    return jsonify(cliente.serialize()),200
+
+@app.route('/clientes/<id>', methods=['PUT'])
+def updateCliente(id):
+    cliente = Clientes.query.get(id)
+
+    cliente.nombre = request.json.get('nombre')
+    cliente.apellido_paterno = request.json.get('apellido_paterno')
+    cliente.apellido_materno = request.json.get('apellido_materno')
+    cliente.direccion = request.json.get('direccion')
+    cliente.telefono = request.json.get('telefono')
+    cliente.email = request.json.get('email')
+    cliente.password = request.json.get('password')
+
+    Clientes.update(cliente)
+
+    return jsonify(cliente.serialize()),200
+
+
+
+
 
 # 8. comando para iniciar mi app flask:     flask db init
 # 9. comando para migrar mis modelos:       flask db migrate
 # 10. comando para crear nuestros modelos como tablas : flask db upgrade
 # 11. comando para iniciar la app flask:    flask run
 
-# 4. Configurar los puertos nuestra app 
+# 4. Configurar los puertos nuestra app
+# va al final del código de este archivo
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
