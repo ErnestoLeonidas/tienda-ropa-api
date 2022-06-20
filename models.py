@@ -88,6 +88,7 @@ class Clientes(db.Model):
     comuna_id = db.Column(db.Integer, db.ForeignKey('Comunas.id'), nullable= False)
     comuna = db.relationship('Comunas', backref=db.backref('clientes', lazy='dynamic'))
     email = db.Column(db.String(250), nullable=True)
+    password = db.Column(db.String(250), nullable=True)
     telefono = db.Column(db.String(250), nullable=True)
 
     def serialize(self):
@@ -100,6 +101,7 @@ class Clientes(db.Model):
             "direccion": self.direccion,
             "comuna_id": self.comuna_id,
             "email": self.email,
+            "password": self.password,
             "telefono": self.telefono
         }
 
@@ -272,6 +274,8 @@ class Vendedores(db.Model):
     direccion = db.Column(db.String(250), nullable= False)
     password = db.Column(db.String(250), nullable=True)
     email = db.Column(db.String(250), nullable=True)
+    telefono = db.Column(db.String(250), nullable=False)
+    estado = db.Column(db.String(250), nullable= False)
 
     def serialize(self):
         return{
@@ -282,7 +286,9 @@ class Vendedores(db.Model):
             "apellido_materno": self.apellido_materno,
             "direccion": self.direccion,
             "password": self.password,
-            "email": self.email
+            "email": self.email,
+            "telefono": self.telefono,
+            "estado": self.estado
         }
 
     def save(self):
