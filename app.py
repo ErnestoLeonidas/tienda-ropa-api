@@ -25,7 +25,7 @@ app.config['DEBUG'] = False
 app.config['ENV'] = 'development'
 app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['SQLALCHEMY_ECHO'] = True # para ver los cambios en la base de datos 
+#app.config['SQLALCHEMY_ECHO'] = True # para ver los cambios en la base de datos 
 
 # 17. configuracion de seguridad
 app.config['JWT_SECRET_KEY'] = "secret-key"
@@ -342,7 +342,7 @@ def updateDescuento(id):
 ######### Productos #########
 @app.route('/productos', methods=['GET'])
 def getProductos():
-    productos = Productos.query.all()
+    productos = Productos.query.filter(Productos.estado == 1).all()
     productos = list(map(lambda x: x.serialize(), productos))
     return jsonify(productos),200
 

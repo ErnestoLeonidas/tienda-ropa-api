@@ -421,3 +421,17 @@ INSERT INTO `Comunas` (`id`, `nombre`, `provincia_id`) VALUES
 (344, 'Viña del Mar', 55),
 (345, 'Natales', 56),
 (346, 'Torres del Paine', 56);
+
+
+INSERT INTO Productos (id, codigo, nombre, valor_venta, stock, descripcion, imagen, estado) VALUES
+(1, 'DRESS-001', 'Vestido 1', '10000', '10', 'Descripción del producto 1', '../assets/img/ecommerce/balmain_1.jpg', '1'),
+(2, 'DRESS-002', 'Vestido 2', '15000', '10', 'Descripción del producto 2', '../assets/img/ecommerce/balmain_2.jpg', '1'),
+(3, 'DRESS-003', 'Vestido 3', '20000', '10', 'Descripción del producto 3', '../assets/img/ecommerce/balmain_3.jpg', '1'),
+(4, 'DRESS-004', 'Vestido 4', '25000', '10', 'Descripción del producto 4', '../assets/img/ecommerce/balmain_4.jpg', '1'),
+(5, 'DRESS-005', 'Vestido 5', '30000', '10', 'Descripción del producto 5', '../assets/img/ecommerce/balmain_5.jpg', '1'),
+(6, 'DRESS-006', 'Vestido 6', '12000', '10', 'Descripción del producto 6', '../assets/img/ecommerce/balmain_6.jpg', '1'),
+(7, 'DRESS-007', 'Vestido 7', '13000', '10', 'Descripción del producto 7', '../assets/img/ecommerce/balmain_7.jpg', '1'),
+(8, 'DRESS-008', 'Vestido 8', '14000', '10', 'Descripción del producto 8', '../assets/img/ecommerce/balmain_8.jpg', '1'),
+(9, 'DRESS-009', 'Vestido 9', '15000', '10', 'Descripción del producto 9', '../assets/img/ecommerce/balmain_9.jpg', '1');
+
+DELETE FROM Productos WHERE id > 0;
