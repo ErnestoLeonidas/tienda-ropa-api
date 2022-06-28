@@ -52,8 +52,7 @@ class Provincias(db.Model):
     __tablename__ = 'Provincias'
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(250), nullable= False)
-    region_id = db.Column(db.Integer, db.ForeignKey('Regiones.id'), nullable=False)
-    region = db.relationship('Regiones', backref=db.backref('provincias', lazy=True))
+    region_id = db.Column(db.Integer, nullable=True)
 
     def serialize(self):
         return{
@@ -67,8 +66,7 @@ class Comunas(db.Model):
     __tablename__ = 'Comunas'
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(250), nullable= False)
-    provincia_id = db.Column(db.Integer, db.ForeignKey('Provincias.id'), nullable=False)
-    provincia = db.relationship('Provincias', backref=db.backref('comunas', lazy=True))
+    provincia_id = db.Column(db.Integer, nullable=True)
 
     def serialize(self):
         return{
@@ -85,8 +83,7 @@ class Clientes(db.Model):
     apellido_paterno = db.Column(db.String(250), nullable= False)
     apellido_materno = db.Column(db.String(250), nullable= True)
     direccion = db.Column(db.String(250), nullable= False)
-    comuna_id = db.Column(db.Integer, db.ForeignKey('Comunas.id'), nullable= False)
-    comuna = db.relationship('Comunas', backref=db.backref('clientes', lazy='dynamic'))
+    comuna_id = db.Column(db.Integer, nullable=True)
     email = db.Column(db.String(250), nullable=True)
     password = db.Column(db.String(250), nullable=True)
     telefono = db.Column(db.String(250), nullable=True)
@@ -119,8 +116,7 @@ class Clientes(db.Model):
 class Suscripciones(db.Model):
     __tablename__ = 'Suscripciones'
     id = db.Column(db.Integer, primary_key=True)
-    cliente_id = db.Column(db.Integer, db.ForeignKey('Clientes.id'), nullable= False)
-    cliente = db.relationship('Clientes', backref=db.backref('suscripciones', lazy='dynamic'))
+    cliente_id = db.Column(db.Integer, nullable=True)
     fecha_inicio = db.Column(db.DateTime, nullable= False)
     fecha_termino = db.Column(db.DateTime, nullable= False)
     estado = db.Column(db.String(250), nullable= False)
@@ -148,8 +144,7 @@ class Suscripciones(db.Model):
 class Donaciones(db.Model):
     __tablename__ = 'Donaciones'
     id = db.Column(db.Integer, primary_key=True)
-    cliente_id = db.Column(db.Integer, db.ForeignKey('Clientes.id'), nullable= False)
-    cliente = db.relationship('Clientes', backref=db.backref('donaciones', lazy='dynamic'))
+    cliente_id = db.Column(db.Integer, nullable=True)
     fecha_donacion = db.Column(db.DateTime, nullable= False)
     monto_donacion = db.Column(db.Integer, nullable= False)
     estado = db.Column(db.String(250), nullable= False)
@@ -239,10 +234,8 @@ class Productos(db.Model):
 class Descuentos_Productos(db.Model):
     __tablename__ = 'Descuentos_Productos'
     id = db.Column(db.Integer, primary_key=True)
-    producto_id = db.Column(db.Integer, db.ForeignKey('Productos.id'), nullable= False)
-    producto = db.relationship('Productos', backref=db.backref('descuentos_productos', lazy='dynamic'))
-    descuento_id = db.Column(db.Integer, db.ForeignKey('Descuentos.id'), nullable= False)
-    descuento = db.relationship('Descuentos', backref=db.backref('descuentos_productos', lazy='dynamic'))
+    producto_id = db.Column(db.Integer, nullable=True)
+    descuento_id = db.Column(db.Integer, nullable=True)
     estado = db.Column(db.String(250), nullable= False)
 
     def serialize(self):
@@ -305,10 +298,8 @@ class Vendedores(db.Model):
 class Ventas(db.Model):
     __tablename__ = 'Ventas'
     id = db.Column(db.Integer, primary_key=True)
-    vendedor_id = db.Column(db.Integer, db.ForeignKey('Vendedores.id'), nullable= False)
-    vendedor = db.relationship('Vendedores', backref=db.backref('ventas', lazy='dynamic'))
-    cliente_id = db.Column(db.Integer, db.ForeignKey('Clientes.id'), nullable= False)
-    cliente = db.relationship('Clientes', backref=db.backref('ventas', lazy='dynamic'))
+    vendedor_id = db.Column(db.Integer, nullable=True)
+    cliente_id = db.Column(db.Integer, nullable=True)
     descuento = db.Column(db.Integer, nullable= True)
     fecha = db.Column(db.DateTime, nullable= False)
     total = db.Column(db.Integer, nullable= False)
@@ -341,10 +332,8 @@ class Ventas(db.Model):
 class Detalle_Ventas(db.Model):
     __tablename__ = 'Detalle_Ventas'
     id = db.Column(db.Integer, primary_key=True)
-    venta_id = db.Column(db.Integer, db.ForeignKey('Ventas.id'), nullable= False)
-    venta = db.relationship('Ventas', backref=db.backref('detalle_ventas', lazy='dynamic'))
-    producto_id = db.Column(db.Integer, db.ForeignKey('Productos.id'), nullable= False)
-    producto = db.relationship('Productos', backref=db.backref('detalle_ventas', lazy='dynamic'))
+    venta_id = db.Column(db.Integer, nullable=True)
+    producto_id = db.Column(db.Integer, nullable=True)
     cantidad = db.Column(db.Integer, nullable= False)
     precio = db.Column(db.Integer, nullable= False)
     descuento = db.Column(db.Integer, nullable= True)
@@ -380,10 +369,8 @@ class Despachos(db.Model):
     rut_recibe = db.Column(db.String(250), nullable= True)
     nombre_recibe = db.Column(db.String(250), nullable= True)
     direccion = db.Column(db.String(250), nullable= False)
-    venta_id = db.Column(db.Integer, db.ForeignKey('Ventas.id'), nullable= False)
-    venta = db.relationship('Ventas', backref=db.backref('despachos', lazy='dynamic'))
-    cliente_id = db.Column(db.Integer, db.ForeignKey('Clientes.id'), nullable= False)
-    cliente = db.relationship('Clientes', backref=db.backref('despachos', lazy='dynamic'))
+    venta_id = db.Column(db.Integer, nullable=True)
+    cliente_id = db.Column(db.Integer, nullable=True)
 
     def serialize(self):
         return{
