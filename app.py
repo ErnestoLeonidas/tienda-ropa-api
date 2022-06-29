@@ -10,6 +10,8 @@ from models import Donaciones, Descuentos, Productos, Descuentos_Productos, Deta
 from models import Ventas, Vendedores, Despachos
 from flask_cors import CORS, cross_origin
 
+from datetime import datetime
+
 # 16. jwt seguridad
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
@@ -156,7 +158,6 @@ def getClientes():
 def addCliente():
     cliente = Clientes()
 
-    cliente.id = request.json.get('id')
     cliente.rut = request.json.get('rut')
     cliente.nombre = request.json.get('nombre')
     cliente.apellido_paterno = request.json.get('apellido_paterno')
@@ -211,7 +212,6 @@ def getSuscripciones():
 def addSuscripcion():
     suscripcion = Suscripciones()
 
-    suscripcion.id = request.json.get('id')
     suscripcion.cliente_id = request.json.get('cliente_id')
     suscripcion.fecha_inicio = request.json.get('fecha_inicio')
     suscripcion.fecha_termino = request.json.get('fecha_termino')
@@ -256,7 +256,6 @@ def getDonaciones():
 def addDonacion():
     donacion = Donaciones()
 
-    donacion.id = request.json.get('id')
     donacion.cliente_id = request.json.get('cliente_id')
     donacion.fecha_donacion = request.json.get('fecha_donacion')
     donacion.monto_donacion = request.json.get('monto_donacion')
@@ -305,7 +304,6 @@ def getDescuentos():
 def addDescuento():
     descuento = Descuentos()
 
-    descuento.id = request.json.get('id')
     descuento.nombre = request.json.get('nombre')
     descuento.fecha = request.json.get('fecha')
     descuento.porcentaje = request.json.get('porcentaje')
@@ -350,7 +348,6 @@ def getProductos():
 def addProducto():
     producto = Productos()
 
-    producto.id = request.json.get('id')
     producto.codigo = request.json.get('codigo')
     producto.nombre = request.json.get('nombre')
     producto.valor_venta = request.json.get('valor_venta')
@@ -401,7 +398,6 @@ def getDescuentosProductos():
 def addDescuentosProducto():
     descuentos_producto = Descuentos_Productos()
 
-    descuentos_producto.id = request.json.get('id')
     descuentos_producto.producto_id = request.json.get('producto_id')
     descuentos_producto.descuento_id = request.json.get('descuento_id')
     descuentos_producto.estado = request.json.get('estado')
@@ -444,7 +440,6 @@ def getVendedores():
 def addVendedor():
     vendedor = Vendedores()
 
-    vendedor.id = request.json.get('id')
     vendedor.primer_nombre = request.json.get('primer_nombre')
     vendedor.segundo_nombre = request.json.get('segundo_nombre')
     vendedor.apellido_paterno = request.json.get('apellido_paterno')
@@ -503,12 +498,15 @@ def addVenta():
     venta.vendedor_id = request.json.get('vendedor_id')
     venta.cliente_id = request.json.get('cliente_id')
     venta.descuento = request.json.get('descuento')
-    venta.fecha = request.json.get('fecha')
+    venta.fecha = datetime.strptime(request.json.get('fecha'), '%Y-%m-%d').date() 
     venta.total = request.json.get('total')
     venta.iva = request.json.get('iva')
     venta.estado = request.json.get('estado')
 
-    Ventas.save(venta)
+    try:
+        Ventas.save(venta)
+    except:
+        return jsonify({'error': 'existe'}),201
 
     return jsonify(venta.serialize()),200
 
@@ -550,7 +548,6 @@ def getDetalleVentas():
 def addDetalleVenta():
     detalle_venta = Detalle_Ventas()
 
-    detalle_venta.id = request.json.get('id')
     detalle_venta.venta_id = request.json.get('venta_id')
     detalle_venta.producto_id = request.json.get('producto_id')
     detalle_venta.cantidad = request.json.get('cantidad')
@@ -572,6 +569,21 @@ def deleteDetalleVenta(id):
     detalle_venta = Detalle_Ventas.query.get(id)
     Detalle_Ventas.delete(detalle_venta)
     return jsonify(detalle_venta.serialize()),200
+
+# Editar detalle_venta segun el id_producto
+@app.route('/detalle_ventas/<id_producto>/<id_venta>', methods=['PUT'])
+def updateDetalleVentaProProducto(id_producto, id_venta):
+    detalle_venta = Detalle_Ventas.query.filter_by(producto_id=id_producto, venta_id=id_venta).first()
+
+    detalle_venta.cantidad = request.json.get('cantidad')
+    detalle_venta.precio = request.json.get('precio')
+    detalle_venta.descuento = request.json.get('descuento')
+    detalle_venta.estado = request.json.get('estado')
+
+    Detalle_Ventas.update(detalle_venta)
+
+    return jsonify(detalle_venta.serialize()),200
+
 
 @app.route('/detalle_ventas/<id>', methods=['PUT'])
 def updateDetalleVenta(id):
@@ -599,7 +611,6 @@ def getDespachos():
 def addDespacho():
     despacho = Despachos()
 
-    despacho.id = request.json.get('id')
     despacho.fecha_entrega = request.json.get('fecha_entrega')
     despacho.hora_entrega = request.json.get('hora_entrega')
     despacho.rut_recibe = request.json.get('rut_recibe')

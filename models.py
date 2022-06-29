@@ -297,7 +297,7 @@ class Vendedores(db.Model):
 
 class Ventas(db.Model):
     __tablename__ = 'Ventas'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(250), primary_key=True)
     vendedor_id = db.Column(db.Integer, nullable=True)
     cliente_id = db.Column(db.Integer, nullable=True)
     descuento = db.Column(db.Integer, nullable= True)
